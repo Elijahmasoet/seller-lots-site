@@ -18,7 +18,7 @@
   color-scheme:light;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .sticky{transition:none}
@@ -31,6 +31,7 @@ body{
   background:var(--paper);
   border-top:4px solid var(--green);
   -webkit-text-size-adjust:100%;
+  overflow-x:hidden;
 }
 a{color:inherit}
 img{max-width:100%;height:auto}
@@ -39,7 +40,7 @@ img{max-width:100%;height:auto}
   padding:8px 12px;z-index:30;border-radius:4px;
 }
 .skip:focus{top:12px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.wrap{width:100%;max-width:1040px;margin:0 auto;padding:0 16px;box-sizing:border-box}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 header{border-bottom:1px solid var(--line);background:var(--paper)}
@@ -178,6 +179,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 @media (min-width:980px){
   .hero{padding:48px 0 64px}
   .hero-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:36px;align-items:start}
+  .hero-grid.waitlist-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px}
   .formcard{padding:20px}
   .pagehead{padding:40px 0 8px}
 }
@@ -283,9 +285,40 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 
 
 /* waitlist-wizard-v3b-r1 */
+/* mobile-center harden — form fills card */
+.formcard input,.formcard select,.formcard textarea{width:100%;max-width:100%;box-sizing:border-box}
+
 .bridge{color:var(--muted);font-size:16px;margin:0 0 10px;max-width:34em}
 .waitlist-hero{padding:26px 0 40px}
-.waitlist-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:28px;align-items:start}
+.waitlist-grid{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+.waitlist-grid > *{ min-width:0; width:100%; max-width:100%; box-sizing:border-box; }
+.waitlist-grid .formcard{ order:-1; width:100%; max-width:100%; }
+.hero-grid.waitlist-grid{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+@media (min-width:861px){
+  .waitlist-grid,
+  .hero-grid.waitlist-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+    gap:28px;
+    align-items:start;
+  }
+  .waitlist-grid .formcard,
+  .hero-grid.waitlist-grid .formcard{ order:0; }
+}
 .formcard .steps.wiz,.steps#step-indicator{
   display:flex;align-items:center;gap:8px;margin-bottom:10px;
   font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:15px;
@@ -335,8 +368,6 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 .field input,.field select,.field textarea{border:1.5px solid var(--fieldline)}
 .fail{color:#8a1c1c;font-weight:600;font-size:14px;margin:8px 0}
 @media(max-width:860px){
-  .waitlist-grid{display:flex;flex-direction:column;gap:22px}
-  .waitlist-grid .formcard{order:-1}
   .row2{grid-template-columns:1fr}
   .waitlist-hero{padding:18px 0 28px}
   .chips{grid-template-columns:1fr 1fr}
