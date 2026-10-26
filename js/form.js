@@ -1,296 +1,424 @@
-/* Waitlist form. Replace FORMSPREE_ENDPOINT before this can send.
-   Persona chips first; fields branch by tag. */
-(function () {
-  var form = document.getElementById("leadForm");
-  var q = new URLSearchParams(location.search);
-
+(function(){
   var BRANCH = {
     curious: {
-      show: ["name", "email", "phone", "notes"],
-      require: ["name", "email"],
-      stock: "No",
-      hideStock: true
+      show: ["name","email","phone","notes-short"],
+      require: ["name","email"],
+      hasSellStep: false,
+      label: "Just Curious"
     },
     affiliate: {
-      show: ["name", "email", "phone", "platforms", "platforms-other", "audience", "categories", "categories-other", "notes"],
-      require: ["name", "email", "phone", "platforms", "audience", "categories"],
-      stock: "No",
-      hideStock: true
+      show: ["name","email","phone","platforms","platforms-other","tiktok-row","tiktok","audience","categories","categories-other","notes"],
+      require: ["name","email","phone","platforms","categories","tiktok","audience"],
+      hasSellStep: true,
+      label: "Affiliate / Creator"
     },
     brand: {
-      show: ["name", "email", "phone", "location", "categories", "categories-other", "notes"],
-      require: ["name", "email", "phone", "location", "categories"],
-      stock: "No",
-      hideStock: true
+      show: ["name","email","phone","location","categories","categories-other","notes-short"],
+      require: ["name","email","phone","location","categories"],
+      hasSellStep: false,
+      label: "Australian Brand"
     },
     host: {
-      show: ["name", "email", "phone", "location", "platforms", "platforms-other", "categories", "categories-other", "audience", "stock", "notes"],
-      require: ["name", "email", "phone", "location", "platforms", "categories", "stock"],
-      stock: "Yes",
-      hideStock: false
+      show: ["name","email","phone","location","platforms","platforms-other","tiktok-row","tiktok","audience","categories","categories-other","notes"],
+      require: ["name","email","phone","location","platforms","categories","tiktok"],
+      hasSellStep: true,
+      label: "Creator Buying Stock"
     }
   };
-
   var HELPERS = {
-    curious: {
-      email: "Waitlist updates go here.",
-      phone: "Optional."
-    },
+    curious: { email: "Waitlist updates go here.", phone: "Optional." },
     affiliate: {
       email: "Updates and creator notes go here.",
       phone: "Same number you’d answer for a launch message.",
       platforms: "Tick all that apply.",
-      audience: "Rough is fine.",
-      categories: "Tick all that apply."
+      categories: "Tick all that apply.",
+      tiktok: "Your TikTok @ — we’ll use this to check fit.",
+      audience: "Rough is fine."
     },
-    brand: {
-      location: "Where you’re based.",
-      categories: "Tick all that apply."
-    },
+    brand: { location: "Where you’re based.", categories: "Tick all that apply." },
     host: {
       phone: "We’ll use this if a lot is ready.",
       location: "So we know where a lot would need to go.",
       platforms: "Tick all that apply.",
       categories: "Tick all that apply.",
-      audience: "Optional. Hosts without a following: skip or pick “No public audience yet.”",
-      stock: "Default Yes. A pack is a lot with photos and counts. You look, then take it or leave it."
+      tiktok: "Your TikTok @ — we’ll use this to check fit.",
+      audience: "Optional if you’re just starting."
     }
   };
-
   var LABELS = {
-    curious: { platforms: "", categories: "" },
+    curious: {},
     affiliate: {
-      platforms: "Where do you create today?",
+      platforms: "Where do you sell or create content today?",
       categories: "What would you promote?"
     },
-    brand: {
-      categories: "What do you make or supply?"
-    },
+    brand: { categories: "What do you make or supply?" },
     host: {
-      platforms: "Where do you sell today?",
-      categories: "What would you sell?",
-      audience: "Audience or sales size"
+      platforms: "Where do you sell or create content today?",
+      categories: "What would you sell?"
     }
   };
+  var TITLES = {
+    1: { title: "Who You Are", sub: "Host, affiliate, brand, or curious. Tap one to start." },
+    2: { title: "How we reach you", sub: "Name and contact — then the sell details." },
+    3: { title: "How you sell", sub: "Platforms, TikTok, and what you’d sell." }
+  };
 
-  function $(id) {
-    return document.getElementById(id);
-  }
+  var params = new URLSearchParams(location.search);
+  var roleMap = {stock:"host", creator:"affiliate", brand:"brand", curious:"curious", host:"host", affiliate:"affiliate"};
+  var chips = document.querySelectorAll(".chip");
+  var tagEl = document.getElementById("f-tag");
+  var roleEl = document.getElementById("f-role");
+  var step = 1;
+  var persona = null;
 
-  function setHidden(id, value) {
-    var el = $(id);
-    if (el) el.value = value || "";
-  }
-
-  function setSelect(id, value) {
-    var el = $(id);
-    if (!el || value == null || value === "") return;
-    for (var i = 0; i < el.options.length; i++) {
-      if (el.options[i].value === value) {
-        el.value = value;
-        return;
-      }
-    }
-  }
-
-  function setHelper(key, text) {
-    var el = $("help-" + key);
+  function $(id){ return document.getElementById(id); }
+  function setRequired(el, on){
     if (!el) return;
-    if (text) {
-      el.textContent = text;
-      el.hidden = false;
-    } else {
-      el.textContent = "";
-      el.hidden = true;
-    }
-  }
-
-  function setLegend(key, text) {
-    var el = $("legend-" + key);
-    if (el && text) el.textContent = text;
-  }
-
-  function setLabel(key, text) {
-    var el = $("label-" + key);
-    if (el && text) {
-      var opt = el.querySelector(".opt");
-      var optHtml = opt ? " " + opt.outerHTML : "";
-      el.innerHTML = text + optHtml;
-    }
-  }
-
-  function fieldWrap(key) {
-    return document.querySelector('[data-branch="' + key + '"]');
-  }
-
-  function setRequired(el, on) {
-    if (!el) return;
-    if (on) el.setAttribute("required", "required");
+    if (on) el.setAttribute("required","required");
     else el.removeAttribute("required");
   }
+  function fieldWrap(key){ return document.querySelector('[data-branch="'+key+'"]'); }
 
-  function clearChecks(name) {
-    if (!form) return;
-    Array.prototype.forEach.call(form.querySelectorAll('input[name="' + name + '"]'), function (c) {
-      c.checked = false;
-    });
-  }
-
-  function applyBranch(tag) {
+  function applyBranch(tag){
     var cfg = BRANCH[tag];
-    var details = $("branch-fields");
-    var chipHelper = $("chip-helper");
-    var chips = document.querySelectorAll(".chip[data-persona]");
-    Array.prototype.forEach.call(chips, function (c) {
-      var on = c.getAttribute("data-persona") === tag;
-      c.setAttribute("aria-pressed", on ? "true" : "false");
-      c.classList.toggle("is-on", on);
-    });
-
-    setHidden("f-tag", tag || "");
-
-    if (!cfg) {
-      if (details) details.hidden = true;
-      if (chipHelper) chipHelper.hidden = false;
-      return;
-    }
-
-    if (details) details.hidden = false;
-    if (chipHelper) chipHelper.hidden = false;
-
-    ["name", "email", "phone", "location", "platforms", "platforms-other", "audience", "categories", "categories-other", "stock", "notes"].forEach(function (key) {
+    if (!cfg) return;
+    ["name","email","phone","location","platforms","platforms-other","tiktok-row","tiktok","audience","categories","categories-other","notes","notes-short"].forEach(function(key){
       var wrap = fieldWrap(key);
       if (!wrap) return;
       var show = cfg.show.indexOf(key) !== -1;
       wrap.hidden = !show;
-      if (!show) {
-        var inputs = wrap.querySelectorAll("input, select, textarea");
-        Array.prototype.forEach.call(inputs, function (inp) {
-          if (inp.type === "checkbox" || inp.type === "radio") {
-            inp.checked = false;
-            inp.disabled = true;
-            return;
-          }
-          if (inp.name === "wants_stock" || inp.id === "f-stock-hidden") return;
-          setRequired(inp, false);
-          if (inp.tagName === "SELECT" || inp.tagName === "TEXTAREA" || inp.type === "text" || inp.type === "tel" || inp.type === "email") {
-            /* keep typed values if user switches persona; only clear location etc optional */
-          }
-        });
-      } else {
-        var inputsOn = wrap.querySelectorAll("input, select, textarea");
-        Array.prototype.forEach.call(inputsOn, function (inp) {
-          if (inp.type === "checkbox" || inp.type === "radio") inp.disabled = false;
-        });
-      }
+      var inputs = wrap.querySelectorAll("input, select, textarea");
+      Array.prototype.forEach.call(inputs, function(inp){
+        if (!show){
+          if (inp.type === "checkbox" || inp.type === "radio"){ inp.checked = false; inp.disabled = true; }
+          else { setRequired(inp, false); inp.disabled = true; }
+        } else {
+          inp.disabled = false;
+        }
+      });
     });
-
-    // Required flags for visible fields
     setRequired($("f-name"), cfg.require.indexOf("name") !== -1);
     setRequired($("f-email"), cfg.require.indexOf("email") !== -1);
     setRequired($("f-phone"), cfg.require.indexOf("phone") !== -1);
     setRequired($("f-loc"), cfg.require.indexOf("location") !== -1);
-    setRequired($("f-band"), cfg.require.indexOf("audience") !== -1);
-    setRequired($("f-stock"), cfg.require.indexOf("stock") !== -1 && !cfg.hideStock);
-
-    // Helpers + legends
+    setRequired($("f-tiktok"), cfg.require.indexOf("tiktok") !== -1);
+    setRequired($("f-audience"), cfg.require.indexOf("audience") !== -1);
+    var optAud = $("audience-opt");
+    if (optAud) optAud.hidden = cfg.require.indexOf("audience") !== -1;
     var h = HELPERS[tag] || {};
-    setHelper("email", h.email || "");
-    setHelper("phone", h.phone || "");
-    setHelper("location", h.location || "");
-    setHelper("platforms", h.platforms || "");
-    setHelper("audience", h.audience || "");
-    setHelper("categories", h.categories || "");
-    setHelper("stock", h.stock || "");
-
+    ["email","phone","location","platforms","categories","tiktok","audience"].forEach(function(k){
+      var el = $("help-"+k);
+      if (!el) return;
+      if (h[k]){ el.textContent = h[k]; el.hidden = false; }
+      else { el.textContent = ""; el.hidden = true; }
+    });
     var L = LABELS[tag] || {};
-    if (L.platforms) setLegend("platforms", L.platforms);
-    if (L.categories) setLegend("categories", L.categories);
-    if (L.audience) setLabel("audience", L.audience);
+    if (L.platforms && $("legend-platforms")) $("legend-platforms").textContent = L.platforms;
+    if (L.categories && $("legend-categories")) $("legend-categories").textContent = L.categories;
+    syncOther("platform","platforms-other","f-platforms-other");
+    syncOther("categories","categories-other","f-categories-other");
 
-    // Stock: host shows UI; others force hidden No
-    var stockWrap = fieldWrap("stock");
-    var stockSelect = $("f-stock");
-    var stockHidden = $("f-stock-hidden");
-    if (cfg.hideStock) {
-      if (stockWrap) stockWrap.hidden = true;
-      if (stockSelect) {
-        stockSelect.removeAttribute("required");
-        stockSelect.removeAttribute("name");
-        stockSelect.value = "";
+    /* Short finish (brand/curious of-2) vs long continue */
+    var shortF = $("short-finish");
+    var longN = $("long-next");
+    if (cfg.hasSellStep){
+      if (shortF) shortF.hidden = true;
+      if (longN) longN.hidden = false;
+      /* disable short notes name conflict — only one notes field active */
+      var ns = $("f-notes-short");
+      if (ns){ ns.disabled = true; ns.removeAttribute("name"); }
+      var nl = $("f-notes");
+      if (nl){ nl.disabled = false; nl.setAttribute("name","notes"); }
+    } else {
+      if (shortF) shortF.hidden = false;
+      if (longN) longN.hidden = true;
+      var ns2 = $("f-notes-short");
+      if (ns2){ ns2.disabled = false; ns2.setAttribute("name","notes"); }
+      var nl2 = $("f-notes");
+      if (nl2){ nl2.disabled = true; nl2.removeAttribute("name"); }
+    }
+  }
+
+  function syncOther(name, boxId, inputId){
+    var box = $(boxId);
+    var other = document.querySelector('input[name="'+name+'"][value="Other"]');
+    var parentKey = name === "categories" ? "categories" : "platforms";
+    var parent = fieldWrap(parentKey);
+    var parentOk = !!(parent && !parent.hidden);
+    if (!box || !other) return;
+    var show = other.checked && parentOk;
+    box.hidden = !show;
+    if (!show){
+      var inp = $(inputId);
+      if (inp){ inp.value = ""; setRequired(inp, false); }
+    } else {
+      setRequired($(inputId), true);
+    }
+  }
+
+  function updateIndicator(){
+    var ind = $("step-indicator");
+    ind.hidden = false;
+    var d1 = $("dot-1"), d2 = $("dot-2"), d3 = $("dot-3");
+    var sep1 = $("sep-1"), sep2 = $("sep-2");
+    var cfg = persona ? BRANCH[persona] : null;
+    var ofN = (cfg && !cfg.hasSellStep) ? 2 : 3;
+    var displayStep = step;
+    if (cfg && !cfg.hasSellStep && step === 2) displayStep = 2;
+    if (cfg && !cfg.hasSellStep && step === 1) displayStep = 1;
+
+    d1.className = "dot" + (step === 1 ? " on" : " done");
+    if (ofN === 3){
+      d2.hidden = false; if (sep2) sep2.hidden = false; d3.hidden = false;
+      d2.className = "dot" + (step === 2 ? " on" : (step > 2 ? " done" : ""));
+      d3.className = "dot" + (step === 3 ? " on" : "");
+    } else {
+      /* of 2: hide middle dot */
+      d2.hidden = true; if (sep2) sep2.hidden = true; d3.hidden = false;
+      d3.className = "dot" + (step >= 2 ? " on" : "");
+      d3.textContent = "2";
+    }
+    if (ofN === 3){ d3.textContent = "3"; }
+
+    var label = $("step-label");
+    if (step === 1 && !persona){
+      label.textContent = "Step 1 of 3 · under a minute";
+      d2.hidden = false; if (sep2) sep2.hidden = false; d3.hidden = false;
+      d2.className = "dot"; d3.className = "dot"; d3.textContent = "3";
+    } else if (ofN === 2){
+      label.textContent = "Step " + displayStep + " of 2" + (step === 1 ? " · under a minute" : "");
+    } else {
+      label.textContent = "Step " + step + " of 3" + (step === 1 ? " · under a minute" : "");
+    }
+
+    /* Sticky role · Change on steps 2–3 */
+    var sticky = $("role-sticky");
+    if (step >= 2 && persona){
+      sticky.hidden = false;
+      $("role-label").textContent = (cfg && cfg.label) || persona;
+    } else {
+      sticky.hidden = true;
+    }
+
+    var t = TITLES[step] || TITLES[1];
+    $("card-title").textContent = t.title;
+    $("card-sub").textContent = t.sub;
+    if (persona === "curious" && step === 2){
+      $("card-title").textContent = "Stay in the loop";
+      $("card-sub").textContent = "Name and email. That’s it for curious.";
+    }
+    if (persona === "brand" && step === 2){
+      $("card-title").textContent = "Brand details";
+      $("card-sub").textContent = "Contact + what you make. Then you’re on the list.";
+    }
+    if ((persona === "host" || persona === "affiliate") && step === 2){
+      $("card-title").textContent = "How we reach you";
+      $("card-sub").textContent = "Contact first — TikTok details next.";
+    }
+    if ((persona === "host" || persona === "affiliate") && step === 3){
+      $("card-title").textContent = "How you sell";
+      $("card-sub").textContent = "Platforms, TikTok, and what you’d sell.";
+    }
+  }
+
+  function showStep(n){
+    step = n;
+    $("step-1").hidden = n !== 1;
+    $("step-2").hidden = n !== 2;
+    $("step-3").hidden = n !== 3;
+    updateIndicator();
+    ["fail-2","fail-2-short","fail-3"].forEach(function(id){
+      var el = $(id);
+      if (el){ el.hidden = true; el.textContent = ""; }
+    });
+    var card = $("waitlist");
+    if (card && n > 1 && card.scrollIntoView){
+      try { card.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch(e){}
+    }
+  }
+
+  function selectPersona(p, r){
+    persona = p;
+    chips.forEach(function(c){
+      var on = c.getAttribute("data-persona") === p;
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (tagEl) tagEl.value = p;
+    if (roleEl) roleEl.value = r || p;
+    applyBranch(p);
+    showStep(2);
+  }
+
+  function clearPersona(){
+    persona = null;
+    chips.forEach(function(c){ c.setAttribute("aria-pressed","false"); });
+    if (tagEl) tagEl.value = "";
+    if (roleEl) roleEl.value = "";
+    showStep(1);
+  }
+
+  chips.forEach(function(c){
+    c.addEventListener("click", function(){
+      selectPersona(c.getAttribute("data-persona"), c.getAttribute("data-role"));
+    });
+  });
+
+  $("role-change").addEventListener("click", clearPersona);
+  $("back-2").addEventListener("click", clearPersona);
+  $("back-2-short").addEventListener("click", clearPersona);
+  $("back-3").addEventListener("click", function(){ showStep(2); });
+
+  function checked(name){
+    return document.querySelectorAll('input[name="'+name+'"]:checked').length > 0;
+  }
+
+  function validateContact(){
+    var cfg = BRANCH[persona];
+    var problems = [];
+    var name = $("f-name"), email = $("f-email"), phone = $("f-phone"), loc = $("f-loc");
+    if (cfg.require.indexOf("name") !== -1 && name && !name.value.trim()) problems.push("Add your name.");
+    if (cfg.require.indexOf("email") !== -1 && email && !email.value.trim()) problems.push("Add your email.");
+    if (cfg.require.indexOf("phone") !== -1 && phone && !phone.value.trim()) problems.push("Add your mobile.");
+    if (cfg.require.indexOf("location") !== -1 && loc && !loc.value.trim()) problems.push("Add city or postcode.");
+    return problems;
+  }
+
+  $("next-2").addEventListener("click", function(){
+    var problems = validateContact();
+    var fail = $("fail-2");
+    if (problems.length){
+      fail.hidden = false;
+      fail.textContent = problems.join(" ");
+      return;
+    }
+    showStep(3);
+  });
+
+  document.querySelectorAll('input[name="platform"]').forEach(function(c){
+    c.addEventListener("change", function(){ syncOther("platform","platforms-other","f-platforms-other"); });
+  });
+  document.querySelectorAll('input[name="categories"]').forEach(function(c){
+    c.addEventListener("change", function(){ syncOther("categories","categories-other","f-categories-other"); });
+  });
+
+  var lead = $("leadForm");
+  lead.addEventListener("submit", function(e){
+    var cfg = BRANCH[persona];
+    var failId = (cfg && !cfg.hasSellStep) ? "fail-2-short" : "fail-3";
+    var fail = $(failId) || $("fail-3");
+    if (!cfg){
+      e.preventDefault();
+      fail.hidden = false;
+      fail.textContent = "Pick who you are first.";
+      showStep(1);
+      return;
+    }
+    var problems = validateContact();
+    if (cfg.hasSellStep){
+      if (cfg.require.indexOf("platforms") !== -1 && !checked("platform")){
+        problems.push("Pick at least one place you sell or create content today.");
       }
-      if (stockHidden) {
-        stockHidden.name = "wants_stock";
-        stockHidden.value = "No";
+      var platOther = document.querySelector('input[name="platform"][value="Other"]');
+      var platText = $("f-platforms-other");
+      if (platOther && platOther.checked && platText && !platText.value.trim()){
+        problems.push("Tell us the other platform.");
+      }
+      var tt = $("f-tiktok");
+      if (cfg.require.indexOf("tiktok") !== -1 && tt && !tt.value.trim()){
+        problems.push("Add your TikTok username.");
+      }
+      var aud = $("f-audience");
+      if (cfg.require.indexOf("audience") !== -1 && aud && !aud.value){
+        problems.push("Pick a following size.");
+      }
+      if (cfg.require.indexOf("categories") !== -1 && !checked("categories")){
+        problems.push("Pick at least one category.");
+      }
+      var other = document.querySelector('input[name="categories"][value="Other"]');
+      var otherText = $("f-categories-other");
+      if (other && other.checked && otherText && !otherText.value.trim()){
+        problems.push("Tell us the other category.");
       }
     } else {
-      if (stockHidden) {
-        stockHidden.removeAttribute("name");
-        stockHidden.value = "";
+      if (cfg.require.indexOf("categories") !== -1 && !checked("categories")){
+        problems.push("Pick at least one category.");
       }
-      if (stockSelect) {
-        stockSelect.setAttribute("name", "wants_stock");
-        stockSelect.setAttribute("required", "required");
-        if (!stockSelect.value) stockSelect.value = cfg.stock || "Yes";
-      }
-      if (stockWrap) stockWrap.hidden = false;
-      var packGloss = $("pack-gloss");
-      if (packGloss) packGloss.hidden = false;
-    }
-
-    // Audience optional for host: remove required already done; show opt mark
-    var audLabel = $("label-audience");
-    if (audLabel) {
-      var opt = audLabel.querySelector(".opt");
-      if (tag === "host") {
-        if (!opt) {
-          audLabel.insertAdjacentHTML("beforeend", ' <span class="opt">(optional)</span>');
-        }
-      } else if (opt) {
-        opt.remove();
+      var otherB = document.querySelector('input[name="categories"][value="Other"]');
+      var otherTextB = $("f-categories-other");
+      if (otherB && otherB.checked && otherTextB && !otherTextB.value.trim()){
+        problems.push("Tell us the other category.");
       }
     }
 
-    syncOtherCategory();
-    syncOtherPlatform();
-  }
+    if (!lead.checkValidity() && problems.length === 0){
+      e.preventDefault();
+      lead.reportValidity();
+      fail.hidden = false;
+      fail.textContent = "Check the highlighted fields.";
+      return;
+    }
+    if (problems.length){
+      e.preventDefault();
+      fail.hidden = false;
+      fail.textContent = problems.join(" ");
+      return;
+    }
+    var u = $("f-tiktok");
+    if (u && u.value) u.value = u.value.replace(/^@+/, "").trim();
+    if (params.get("nosubmit") === "1"){
+      e.preventDefault();
+    }
+  });
 
-  function selectPersona(tag, stockOverride) {
-    if (!BRANCH[tag]) return;
-    applyBranch(tag);
-    if (tag === "host") {
-      var stockSelect = $("f-stock");
-      if (stockSelect) {
-        var want = stockOverride || "Yes";
-        if (want === "Yes" || want === "Maybe" || want === "No") stockSelect.value = want;
-        else stockSelect.value = "Yes";
+  /* Brand needs categories on of-2 finish — clone visibility: show categories fieldset inside short-finish for brand */
+  function ensureBrandCategories(){
+    var cfg = persona && BRANCH[persona];
+    var shortF = $("short-finish");
+    var fsCat = $("fs-categories");
+    if (!shortF || !fsCat) return;
+    if (cfg && !cfg.hasSellStep && cfg.show.indexOf("categories") !== -1){
+      /* move categories into short-finish before notes */
+      var notesShort = fieldWrap("notes-short");
+      if (notesShort && fsCat.parentNode !== shortF){
+        shortF.insertBefore(fsCat, notesShort);
+      }
+      fsCat.hidden = false;
+    } else if (cfg && cfg.hasSellStep){
+      /* ensure categories back in step-3 before notes */
+      var notes = fieldWrap("notes");
+      var step3 = $("step-3");
+      if (notes && fsCat.parentNode !== step3){
+        step3.insertBefore(fsCat, notes);
       }
     }
   }
 
-  function syncOtherToggle(checkboxName, value, branchKey, inputId) {
-    var other = form && form.querySelector('input[name="' + checkboxName + '"][value="' + value + '"]');
-    var wrap = fieldWrap(branchKey);
-    var input = $(inputId);
-    var parentOk = !!(fieldWrap(checkboxName === "categories" ? "categories" : "platforms") && !fieldWrap(checkboxName === "categories" ? "categories" : "platforms").hidden);
-    var show = !!(other && other.checked && wrap && parentOk);
-    if (wrap) wrap.hidden = !show;
-    if (input) {
-      setRequired(input, show);
-      if (!show) input.value = "";
-    }
+  var _apply = applyBranch;
+  applyBranch = function(tag){
+    _apply(tag);
+    ensureBrandCategories();
+  };
+
+  /* Deep-link: ?role= preselects and advances. ?step= for screenshots. */
+  var roleQ = (params.get("role") || params.get("tag") || "").toLowerCase();
+  var mapped = roleMap[roleQ] || null;
+  if (mapped){
+    var chip = document.querySelector('.chip[data-persona="'+mapped+'"]');
+    if (chip) selectPersona(mapped, chip.getAttribute("data-role"));
+    var jump = parseInt(params.get("step") || "0", 10);
+    if (jump === 1) showStep(1);
+    if (jump === 2) showStep(2);
+    if (jump === 3 && BRANCH[mapped] && BRANCH[mapped].hasSellStep) showStep(3);
+  } else {
+    showStep(1);
+    if (tagEl) tagEl.value = "";
+    if (roleEl) roleEl.value = "";
   }
 
-  function syncOtherCategory() {
-    syncOtherToggle("categories", "Other", "categories-other", "f-categories-other");
-  }
-
-  function syncOtherPlatform() {
-    syncOtherToggle("platform", "Other", "platforms-other", "f-platforms-other");
-  }
-
-  if (form) {
-    ["gclid", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"].forEach(function (k) {
+  /* UTM / attribution hiddens */
+  (function fillAttribution(){
+    var q = params;
+    ["gclid","utm_source","utm_medium","utm_campaign","utm_term","utm_content"].forEach(function(k){
       var v = q.get(k) || "";
       try {
         if (k === "gclid") {
@@ -298,196 +426,88 @@
           else v = sessionStorage.getItem("sl_gclid") || "";
         }
       } catch (e) {}
-      setHidden("h-" + k, v);
+      var el = document.getElementById("h-" + k);
+      if (el) el.value = v || "";
     });
-    setHidden("h-landing_page", location.href.slice(0, 500));
-    setHidden("h-referrer", (document.referrer || "").slice(0, 500));
+    var lp = document.getElementById("h-landing_page");
+    if (lp) lp.value = location.href.slice(0, 500);
+    var rf = document.getElementById("h-referrer");
+    if (rf) rf.value = (document.referrer || "").slice(0, 500);
+  })();
 
-    var tagQ = (q.get("tag") || "").toLowerCase();
-    var stockQ = q.get("wants_stock") || "";
-    if (BRANCH[tagQ]) {
-      selectPersona(tagQ, stockQ);
-    } else {
-      applyBranch("");
-    }
-
-    Array.prototype.forEach.call(document.querySelectorAll(".chip[data-persona]"), function (chip) {
-      chip.addEventListener("click", function () {
-        selectPersona(chip.getAttribute("data-persona"));
-        var details = $("branch-fields");
-        if (details && details.scrollIntoView) {
-          try { details.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
-        }
-        var nm = $("f-name");
-        if (nm) setTimeout(function () { try { nm.focus({ preventScroll: true }); } catch (e) {} }, 200);
-      });
-    });
-
-    Array.prototype.forEach.call(form.querySelectorAll('input[name="categories"]'), function (c) {
-      c.addEventListener("change", syncOtherCategory);
-    });
-    Array.prototype.forEach.call(form.querySelectorAll('input[name="platform"]'), function (c) {
-      c.addEventListener("change", syncOtherPlatform);
-    });
+  function sydneyNow(){
+    var parts = new Intl.DateTimeFormat("en-AU", {
+      timeZone: "Australia/Sydney",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    }).formatToParts(new Date());
+    var g = {};
+    parts.forEach(function(p){ if (p.type !== "literal") g[p.type] = p.value; });
+    return g.year + "-" + g.month + "-" + g.day + " " + g.hour + ":" + g.minute + ":" + g.second + " Australia/Sydney";
   }
 
-  // Who-it's-for tiles: if still buttons with data-tag, scroll + preselect
-  Array.prototype.forEach.call(document.querySelectorAll("[data-tag]"), function (t) {
-    if (t.tagName === "A") return;
-    t.addEventListener("click", function () {
-      var tag = t.getAttribute("data-tag") || "";
-      var stock = t.getAttribute("data-stock");
-      selectPersona(tag, stock || undefined);
-      var box = $("waitlist");
-      if (box && box.scrollIntoView) box.scrollIntoView({ behavior: "smooth", block: "start" });
-      try {
-        var url = new URL(location.href);
-        url.searchParams.set("tag", tag);
-        if (stock) url.searchParams.set("wants_stock", stock);
-        else url.searchParams.delete("wants_stock");
-        history.replaceState(null, "", url.pathname + url.search + "#waitlist");
-      } catch (e) {}
-      var nm = $("f-name");
-      if (nm) setTimeout(function () { try { nm.focus({ preventScroll: true }); } catch (e) {} }, 400);
-    });
-  });
+  /* Replace native submit with fetch JSON when validation passes */
+  var _lead = $("leadForm");
+  if (_lead) {
+    _lead.addEventListener("submit", function(e){
+      /* If SoT handler already prevented, stop */
+      if (e.defaultPrevented) return;
+      if (params.get("nosubmit") === "1") {
+        e.preventDefault();
+        var box = $("formbox") || $("waitlist");
+        var thanks = document.createElement("p");
+        thanks.className = "thanks";
+        thanks.setAttribute("role","status");
+        thanks.textContent = "Demo mode (nosubmit=1) — form would send to Formspree.";
+        if (box) box.appendChild(thanks);
+        return;
+      }
+      e.preventDefault();
+      var stamp = $("h-submitted_at");
+      if (stamp) stamp.value = sydneyNow();
+      var btn = $("submitBtn") || $("submitBtnShort");
+      var btns = [_lead.querySelector("#submitBtn"), _lead.querySelector("#submitBtnShort")].filter(Boolean);
+      btns.forEach(function(b){ b.disabled = true; });
+      fetch(_lead.action, {
+        method: "POST",
+        body: new FormData(_lead),
+        headers: { Accept: "application/json" }
+      }).then(function(r){
+        if (!r.ok) throw new Error("bad");
+        var card = $("waitlist");
+        var title = $("card-title");
+        var sub = $("card-sub");
+        if (title) title.textContent = "You’re on the list";
+        if (sub) sub.textContent = "";
+        ["step-indicator","role-sticky","step-1","step-2","step-3"].forEach(function(id){
+          var el = $(id); if (el) el.hidden = true;
+        });
+        var msg = document.createElement("p");
+        msg.className = "thanks";
+        msg.setAttribute("tabindex","-1");
+        msg.setAttribute("role","status");
+        msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for hosts on the list.";
+        _lead.hidden = true;
+        if (card) card.appendChild(msg);
+        msg.focus();
+      }).catch(function(){
+        btns.forEach(function(b){ b.disabled = false; });
+        var fail = $("fail-3") || $("fail-2-short") || $("fail-2");
+        if (fail){ fail.hidden = false; fail.textContent = "That didn’t go through. Try again in a minute — or email hello@sellerlots.com.au."; }
+      });
+    }, false); /* bubble after SoT: run after bubble validation? Use capture=false after SoT — SoT uses bubble. Order: SoT bubble first, then our bubble if not prevented. Actually SoT doesn't prevent on success. Our listener must be AFTER SoT. Append after IIFE by patching. */
+  }
 
-  var sticky = $("sticky");
-  var anchor = $("waitlist");
+})();
+
+(function(){
+  var sticky = document.getElementById("sticky");
+  var anchor = document.getElementById("waitlist");
   if (sticky && anchor && "IntersectionObserver" in window) {
     new IntersectionObserver(function (entries) {
       sticky.classList.toggle("on", !entries[0].isIntersecting);
     }).observe(anchor);
   } else if (sticky && !anchor) {
     sticky.classList.add("on");
-  }
-
-  if (!form) return;
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearFail();
-    var tag = ($("f-tag") && $("f-tag").value) || "";
-    var cfg = BRANCH[tag];
-    if (!cfg) {
-      showFail("Pick what you are first.", true);
-      return;
-    }
-
-    // Ensure hidden stock for non-host
-    if (cfg.hideStock) {
-      var stockHidden = $("f-stock-hidden");
-      if (stockHidden) {
-        stockHidden.name = "wants_stock";
-        stockHidden.value = "No";
-      }
-    }
-
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      showFail("Check the highlighted fields.", true);
-      return;
-    }
-
-    var problems = [];
-    if (cfg.require.indexOf("platforms") !== -1 && !checked("platform")) {
-      problems.push("Pick at least one place you sell or create today.");
-    }
-    if (cfg.require.indexOf("categories") !== -1 && !checked("categories")) {
-      problems.push("Pick at least one category.");
-    }
-    var other = form.querySelector('input[name="categories"][value="Other"]');
-    var otherText = $("f-categories-other");
-    if (other && other.checked && otherText && !otherText.value.trim() && cfg.show.indexOf("categories") !== -1) {
-      problems.push("Tell us the other category.");
-      otherText.focus();
-    }
-    var platOther = form.querySelector('input[name="platform"][value="Other"]');
-    var platText = $("f-platforms-other");
-    if (platOther && platOther.checked && platText && !platText.value.trim() && cfg.show.indexOf("platforms") !== -1) {
-      problems.push("Tell us the other platform.");
-      if (!(other && other.checked && otherText && !otherText.value.trim())) platText.focus();
-    }
-    if (problems.length) {
-      showFail(problems.join(" "), true);
-      return;
-    }
-
-    var action = form.getAttribute("action") || "";
-    if (action.indexOf("FORMSPREE_ENDPOINT") !== -1) {
-      showFail("This form is not sending yet. The action is still the FORMSPREE_ENDPOINT placeholder. Connect Formspree, then try again.", true);
-      return;
-    }
-
-    var stamp = $("h-submitted_at");
-    if (stamp) stamp.value = sydneyNow();
-    var btn = $("submitBtn");
-    if (btn) btn.disabled = true;
-    fetch(form.action, {
-      method: "POST",
-      body: new FormData(form),
-      headers: { Accept: "application/json" }
-    }).then(function (r) {
-      if (!r.ok) throw new Error("bad");
-      var box = $("formbox");
-      box.innerHTML = '<p class="thanks" tabindex="-1" role="status">You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. We only talk stock if you said you want it.</p>';
-      var t = box.querySelector(".thanks");
-      if (t) t.focus();
-    }).catch(function () {
-      if (btn) btn.disabled = false;
-      showFail("That didn’t go through. Try again in a minute.", true);
-    });
-  });
-
-  function checked(name) {
-    return form.querySelectorAll('input[name="' + name + '"]:checked').length > 0;
-  }
-  function clearFail() {
-    var m = $("failMsg");
-    if (m) m.remove();
-    var top = $("failMsgTop");
-    if (top) top.remove();
-  }
-  function showFail(text, alsoTop) {
-    var m = $("failMsg");
-    if (!m) {
-      m = document.createElement("p");
-      m.id = "failMsg";
-      m.className = "fail";
-      m.setAttribute("role", "alert");
-      form.appendChild(m);
-    }
-    m.textContent = text;
-    if (alsoTop) {
-      var top = $("failMsgTop");
-      if (!top) {
-        top = document.createElement("p");
-        top.id = "failMsgTop";
-        top.className = "fail fail-top";
-        top.setAttribute("role", "alert");
-        var details = $("branch-fields");
-        var insertAt = details || form;
-        insertAt.insertBefore(top, insertAt.firstChild);
-      }
-      top.textContent = text;
-      if (top.scrollIntoView) top.scrollIntoView({ block: "nearest" });
-    } else if (m.scrollIntoView) {
-      m.scrollIntoView({ block: "nearest" });
-    }
-  }
-  function sydneyNow() {
-    var parts = new Intl.DateTimeFormat("en-AU", {
-      timeZone: "Australia/Sydney",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23"
-    }).formatToParts(new Date());
-    var g = {};
-    parts.forEach(function (p) { if (p.type !== "literal") g[p.type] = p.value; });
-    return g.year + "-" + g.month + "-" + g.day + " " + g.hour + ":" + g.minute + ":" + g.second + " Australia/Sydney";
   }
 })();
