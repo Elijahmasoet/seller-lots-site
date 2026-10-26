@@ -1,3 +1,16 @@
+/* Seller Lots shared: sticky CTA (safe on any page) */
+(function(){
+  var sticky = document.getElementById("sticky");
+  var anchor = document.getElementById("waitlist");
+  if (sticky && anchor && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      sticky.classList.toggle("on", !entries[0].isIntersecting);
+    }).observe(anchor);
+  } else if (sticky && !anchor) {
+    sticky.classList.add("on");
+  }
+})();
+
 (function(){
   var BRANCH = {
     curious: {
@@ -62,6 +75,9 @@
     2: { title: "How we reach you", sub: "Name and contact — then the sell details." },
     3: { title: "How you sell", sub: "Platforms, TikTok, and what you’d sell." }
   };
+
+  /* Home (and other pages) may load this file; only run on waitlist wizard. */
+  if (!document.getElementById("leadForm") || !document.getElementById("step-1")) return;
 
   var params = new URLSearchParams(location.search);
   var roleMap = {stock:"host", creator:"affiliate", brand:"brand", curious:"curious", host:"host", affiliate:"affiliate"};
@@ -492,13 +508,4 @@
 
 })();
 (function(){
-  var sticky = document.getElementById("sticky");
-  var anchor = document.getElementById("waitlist");
-  if (sticky && anchor && "IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      sticky.classList.toggle("on", !entries[0].isIntersecting);
-    }).observe(anchor);
-  } else if (sticky && !anchor) {
-    sticky.classList.add("on");
-  }
 })();
