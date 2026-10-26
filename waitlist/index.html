@@ -35,22 +35,21 @@
     <a href="/seller-lots-site/waitlist/" aria-current="page">Get on the list</a>
   </nav>
 </header>
-<main id="main">
-  <section class="hero">
-    <div class="wrap hero-grid wiz-grid">
+<main class="wrap" id="main">
+  <section class="hero waitlist-hero">
+    <div class="hero-grid waitlist-grid">
       <div class="bridge-col">
         <p class="eyebrow">TikTok Shop Australia</p>
         <h1>Get on the list</h1>
-        <p class="sub">Australian brands who want TikTok Shop. Creators who distribute their stock. Same waitlist. Two sides.</p>
-        <p class="trustline">Pick who you are. We’ll only ask what we need.</p>
+        <p class="bridge">Australian brands who want TikTok Shop. Creators who distribute their stock. Same waitlist. Two sides.</p>
+        <p class="bridge">Pick who you are. We’ll only ask what we need.</p>
         <p class="more seclinks">
           <a href="/seller-lots-site/how-to-sell-on-tiktok-shop-australia/">How to sell →</a>
           <a href="/seller-lots-site/tiktok-shop-australia-stock/">Stock →</a>
         </p>
       </div>
-      <div class="formcard wizard" id="waitlist">
-        <div id="formbox">
-        <div class="wiz-steps" id="step-indicator" aria-live="polite">
+      <div class="formcard" id="waitlist">
+        <div class="steps" id="step-indicator" aria-live="polite">
           <span class="dot on" id="dot-1">1</span><span class="sep" id="sep-1" aria-hidden="true"></span>
           <span class="dot" id="dot-2">2</span><span class="sep" id="sep-2" aria-hidden="true"></span>
           <span class="dot" id="dot-3">3</span>
@@ -62,27 +61,28 @@
         </div>
         <h2 class="cardtitle" id="card-title">Who You Are</h2>
         <p class="cardsub" id="card-sub">Host, affiliate, brand, or curious. Tap one to start.</p>
-        <!-- Formspree: https://formspree.io/f/mnpppjpd — Seller Lots waitlist. Notify sellerlots.au@gmail.com -->
+        <!-- Formspree: https://formspree.io/f/mnpppjpd — mock chrome; HOLD go-live -->
         <form id="leadForm" action="https://formspree.io/f/mnpppjpd" method="POST" novalidate>
-          <input type="hidden" name="_subject" value="Seller Lots waitlist">
-          <input type="hidden" name="_autoresponse" value="You're on the Seller Lots list for TikTok Shop Australia. We'll email this address when it matters. Stock talk is for hosts on the list.">
-          <input type="hidden" name="gclid" id="h-gclid">
-          <input type="hidden" name="utm_source" id="h-utm_source">
-          <input type="hidden" name="utm_medium" id="h-utm_medium">
-          <input type="hidden" name="utm_campaign" id="h-utm_campaign">
-          <input type="hidden" name="utm_term" id="h-utm_term">
-          <input type="hidden" name="utm_content" id="h-utm_content">
-          <input type="hidden" name="landing_page" id="h-landing_page">
-          <input type="hidden" name="referrer" id="h-referrer">
-          <input type="hidden" name="submitted_at" id="h-submitted_at">
-          <input type="hidden" name="tag" id="f-tag" value="">
-          <input type="hidden" name="role" id="f-role" value="">
-          <div class="hp" aria-hidden="true"><label>Leave empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+          <input type="hidden" name="_subject" value="TikTok Shop Australia signup — Seller Lots"/>
+          <input type="hidden" name="_autoresponse" value="You're on the Seller Lots list for TikTok Shop Australia. We'll email this address when it matters. Stock talk is for hosts on the list."/>
+          <input type="hidden" name="gclid" id="h-gclid"/>
+          <input type="hidden" name="utm_source" id="h-utm_source"/>
+          <input type="hidden" name="utm_medium" id="h-utm_medium"/>
+          <input type="hidden" name="utm_campaign" id="h-utm_campaign"/>
+          <input type="hidden" name="utm_term" id="h-utm_term"/>
+          <input type="hidden" name="utm_content" id="h-utm_content"/>
+          <input type="hidden" name="landing_page" id="h-landing_page"/>
+          <input type="hidden" name="referrer" id="h-referrer"/>
+          <input type="hidden" name="submitted_at" id="h-submitted_at"/>
+          <input type="hidden" name="tag" id="f-tag" value=""/>
+          <input type="hidden" name="role" id="f-role" value=""/>
+          <div class="hp" aria-hidden="true"><label>Leave empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"/></label></div>
 
+          <!-- STEP 1: chips only on first paint -->
           <div class="panel" id="step-1" data-step="1">
-            <fieldset class="field">
+            <fieldset>
               <legend>I am mainly a…</legend>
-              <div class="chips persona" role="group" aria-label="Who you are">
+              <div class="chips" role="group" aria-label="Who you are">
                 <button type="button" class="chip" data-persona="host" data-role="stock" data-label="Creator Buying Stock" aria-pressed="false">
                   <strong>Creator Buying Stock</strong>
                   <span>I buy inventory for lives.</span>
@@ -104,16 +104,18 @@
             </fieldset>
           </div>
 
+          <!-- STEP 2: contact (before TikTok intimacy) -->
           <div class="panel" id="step-2" data-step="2" hidden>
-            <div class="row2 pair">
-              <div class="field" data-branch="name"><label for="f-name">Full name</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120"></div>
-              <div class="field" data-branch="email"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" maxlength="200"><p class="helper" id="help-email" hidden></p></div>
+            <div class="row2">
+              <div class="field" data-branch="name"><label for="f-name">Full name</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120"/></div>
+              <div class="field" data-branch="email"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" maxlength="200"/><p class="helper" id="help-email" hidden></p></div>
             </div>
-            <div class="row2 pair">
-              <div class="field" data-branch="phone"><label for="f-phone">Mobile (AU)</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="04xx xxx xxx" maxlength="30"><p class="helper" id="help-phone" hidden></p></div>
-              <div class="field" data-branch="location"><label for="f-loc">City or postcode</label><input id="f-loc" name="location" type="text" placeholder="e.g. Brisbane or 4000" maxlength="80"><p class="helper" id="help-location" hidden></p></div>
+            <div class="row2">
+              <div class="field" data-branch="phone"><label for="f-phone">Mobile (AU)</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="04xx xxx xxx" maxlength="30"/><p class="helper" id="help-phone" hidden></p></div>
+              <div class="field" data-branch="location"><label for="f-loc">City or postcode</label><input id="f-loc" name="location" type="text" placeholder="e.g. Brisbane or 4000" maxlength="80"/><p class="helper" id="help-location" hidden></p></div>
             </div>
 
+            <!-- Brand/curious: notes + submit live on their final (of-2) step -->
             <div id="short-finish" hidden>
               <div class="field" data-branch="notes-short"><label for="f-notes-short">Anything else? <span class="opt">(optional)</span></label><textarea id="f-notes-short" name="notes" rows="3" maxlength="2000" placeholder="Questions about the AU launch"></textarea></div>
               <div class="btn-row">
@@ -131,28 +133,29 @@
             <p class="fail" id="fail-2" hidden role="alert"></p>
           </div>
 
+          <!-- STEP 3: platforms + TikTok + audience + categories + notes + submit (host/affiliate) -->
           <div class="panel" id="step-3" data-step="3" hidden>
             <fieldset class="field" id="fs-platforms" data-branch="platforms">
               <legend id="legend-platforms">Where do you sell or create content today?</legend>
-              <div class="checks pills">
-                <label><input type="checkbox" name="platform" value="TikTok"> TikTok</label>
-                <label><input type="checkbox" name="platform" value="Instagram"> Instagram</label>
-                <label><input type="checkbox" name="platform" value="eBay"> eBay</label>
-                <label><input type="checkbox" name="platform" value="Depop"> Depop</label>
-                <label><input type="checkbox" name="platform" value="Other"> Other</label>
-                <label><input type="checkbox" name="platform" value="None yet"> None yet</label>
+              <div class="checks">
+                <label><input type="checkbox" name="platform" value="TikTok"/> TikTok</label>
+                <label><input type="checkbox" name="platform" value="Instagram"/> Instagram</label>
+                <label><input type="checkbox" name="platform" value="eBay"/> eBay</label>
+                <label><input type="checkbox" name="platform" value="Depop"/> Depop</label>
+                <label><input type="checkbox" name="platform" value="Other"/> Other</label>
+                <label><input type="checkbox" name="platform" value="None yet"/> None yet</label>
               </div>
               <p class="helper" id="help-platforms">Tick all that apply.</p>
               <div class="field" id="platforms-other" data-branch="platforms-other" hidden>
                 <label for="f-platforms-other">Other platform</label>
-                <input id="f-platforms-other" name="platforms_other" type="text" maxlength="120" placeholder="e.g. Facebook Marketplace">
+                <input id="f-platforms-other" name="platforms_other" type="text" maxlength="120" placeholder="e.g. Facebook Marketplace"/>
               </div>
             </fieldset>
 
-            <div class="row2 pair" id="tiktok-fields" data-branch="tiktok-row">
+            <div class="row2" id="tiktok-fields" data-branch="tiktok-row">
               <div class="field" id="tt-user" data-branch="tiktok">
                 <label for="f-tiktok">TikTok username</label>
-                <input id="f-tiktok" name="tiktok_username" type="text" maxlength="30" placeholder="@username" autocomplete="off" inputmode="text">
+                <input id="f-tiktok" name="tiktok_username" type="text" maxlength="30" placeholder="@username" autocomplete="off" inputmode="text"/>
                 <p class="helper" id="help-tiktok">Your TikTok @ — we’ll use this to check fit.</p>
               </div>
               <div class="field" id="tt-band" data-branch="audience">
@@ -172,18 +175,18 @@
 
             <fieldset class="field" id="fs-categories" data-branch="categories">
               <legend id="legend-categories">What would you sell on TikTok Shop?</legend>
-              <div class="checks pills">
-                <label><input type="checkbox" name="categories" value="Clothing"> Clothing</label>
-                <label><input type="checkbox" name="categories" value="Beauty"> Beauty</label>
-                <label><input type="checkbox" name="categories" value="Gadgets"> Gadgets</label>
-                <label><input type="checkbox" name="categories" value="Home"> Home</label>
-                <label><input type="checkbox" name="categories" value="Mystery / blind boxes"> Mystery / blind boxes</label>
-                <label><input type="checkbox" name="categories" value="Other"> Other</label>
+              <div class="checks">
+                <label><input type="checkbox" name="categories" value="Clothing"/> Clothing</label>
+                <label><input type="checkbox" name="categories" value="Beauty"/> Beauty</label>
+                <label><input type="checkbox" name="categories" value="Gadgets"/> Gadgets</label>
+                <label><input type="checkbox" name="categories" value="Home"/> Home</label>
+                <label><input type="checkbox" name="categories" value="Mystery / blind boxes"/> Mystery / blind boxes</label>
+                <label><input type="checkbox" name="categories" value="Other"/> Other</label>
               </div>
               <p class="helper" id="help-categories">Tick all that apply.</p>
               <div class="field" id="categories-other" data-branch="categories-other" hidden>
                 <label for="f-categories-other">What other category?</label>
-                <input id="f-categories-other" name="categories_other" type="text" maxlength="120" placeholder="e.g. pet, tools, food">
+                <input id="f-categories-other" name="categories_other" type="text" maxlength="120" placeholder="e.g. pet, tools, food"/>
               </div>
             </fieldset>
 
@@ -197,7 +200,6 @@
             <p class="fine">Australia. Free. Separate from the Rage Wholesale clothing list. <a href="/seller-lots-site/privacy/">Privacy</a>.</p>
           </div>
         </form>
-        </div>
       </div>
     </div>
   </section>
@@ -214,6 +216,6 @@
     </nav>
   </div>
 </footer>
-<script src="/seller-lots-site/js/waitlist-wizard.js"></script>
+<script src="/seller-lots-site/js/form.js"></script>
 </body>
 </html>

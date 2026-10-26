@@ -415,11 +415,10 @@
     if (roleEl) roleEl.value = "";
   }
 
-  /* UTM / attribution hiddens */
+  /* Attribution hiddens */
   (function fillAttribution(){
-    var q = params;
     ["gclid","utm_source","utm_medium","utm_campaign","utm_term","utm_content"].forEach(function(k){
-      var v = q.get(k) || "";
+      var v = params.get(k) || "";
       try {
         if (k === "gclid") {
           if (v) sessionStorage.setItem("sl_gclid", v);
@@ -446,26 +445,19 @@
     return g.year + "-" + g.month + "-" + g.day + " " + g.hour + ":" + g.minute + ":" + g.second + " Australia/Sydney";
   }
 
-  /* Replace native submit with fetch JSON when validation passes */
+  /* Fetch submit after SoT validation (bubble, registered after SoT listener) */
   var _lead = $("leadForm");
   if (_lead) {
     _lead.addEventListener("submit", function(e){
-      /* If SoT handler already prevented, stop */
       if (e.defaultPrevented) return;
       if (params.get("nosubmit") === "1") {
         e.preventDefault();
-        var box = $("formbox") || $("waitlist");
-        var thanks = document.createElement("p");
-        thanks.className = "thanks";
-        thanks.setAttribute("role","status");
-        thanks.textContent = "Demo mode (nosubmit=1) — form would send to Formspree.";
-        if (box) box.appendChild(thanks);
+        alert("Demo mode (nosubmit=1) — would send to Formspree.");
         return;
       }
       e.preventDefault();
       var stamp = $("h-submitted_at");
       if (stamp) stamp.value = sydneyNow();
-      var btn = $("submitBtn") || $("submitBtnShort");
       var btns = [_lead.querySelector("#submitBtn"), _lead.querySelector("#submitBtnShort")].filter(Boolean);
       btns.forEach(function(b){ b.disabled = true; });
       fetch(_lead.action, {
@@ -482,12 +474,12 @@
         ["step-indicator","role-sticky","step-1","step-2","step-3"].forEach(function(id){
           var el = $(id); if (el) el.hidden = true;
         });
+        _lead.hidden = true;
         var msg = document.createElement("p");
         msg.className = "thanks";
         msg.setAttribute("tabindex","-1");
         msg.setAttribute("role","status");
         msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for hosts on the list.";
-        _lead.hidden = true;
         if (card) card.appendChild(msg);
         msg.focus();
       }).catch(function(){
@@ -495,11 +487,10 @@
         var fail = $("fail-3") || $("fail-2-short") || $("fail-2");
         if (fail){ fail.hidden = false; fail.textContent = "That didn’t go through. Try again in a minute — or email hello@sellerlots.com.au."; }
       });
-    }, false); /* bubble after SoT: run after bubble validation? Use capture=false after SoT — SoT uses bubble. Order: SoT bubble first, then our bubble if not prevented. Actually SoT doesn't prevent on success. Our listener must be AFTER SoT. Append after IIFE by patching. */
+    });
   }
 
 })();
-
 (function(){
   var sticky = document.getElementById("sticky");
   var anchor = document.getElementById("waitlist");
