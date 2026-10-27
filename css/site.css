@@ -86,7 +86,9 @@ h2.sec{font-size:clamp(28px,4vw,36px);line-height:1.05;margin-bottom:14px}
 .field{margin-bottom:8px}
 .field label,.field legend{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
 .field .opt{font-weight:400;color:var(--muted)}
-fieldset.field{border:0;padding:0;min-inline-size:0}
+/* Signed mock: no fieldset chrome. A bare fieldset was still drawing the UA border through the legend. */
+fieldset{border:0;padding:0;margin:0;min-inline-size:0}
+fieldset legend{display:block;width:100%;padding:0;font-size:14px;font-weight:600;margin-bottom:4px}
 .field input,.field select,.field textarea{
   width:100%;font-family:inherit;font-size:16px;color:var(--ink);
   background:var(--fieldbg);border:1px solid var(--fieldline);border-radius:var(--rad);padding:10px 12px;
@@ -375,6 +377,35 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
   .chip strong{font-size:16px}
 }
 @media(max-width:319px){.chips{grid-template-columns:1fr}}
+
+/* Waitlist hero secondary actions — outline buttons, not the green submit */
+.waitlist-hero .seclinks{
+  align-items:stretch;
+  gap:10px;
+  margin-top:16px;
+}
+.waitlist-hero .seclinks a{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:48px;
+  padding:12px 16px;
+  background:#fff;
+  color:var(--ink);
+  text-decoration:none;
+  font-weight:600;
+  font-size:16px;
+  line-height:1.2;
+  text-align:center;
+  border:1.5px solid var(--ink);
+  border-radius:6px;
+  box-shadow:3px 3px 0 var(--green);
+}
+.waitlist-hero .seclinks a:hover,
+.waitlist-hero .seclinks a:focus-visible{
+  background:var(--stamp);
+}
 
 /* === waitlist-wizard-v3b-r1 === */
 .formcard.wizard .wiz-steps{
