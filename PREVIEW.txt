@@ -1,4 +1,0 @@
-TEMPORARY clickthrough preview on github.io — NOT public go-live.
-URL: https://elijahmasoet.github.io/seller-lots-site/
-Custom domain / VentraIP DNS intentionally omitted.
-Signed: waitlist v3-b-r1, how-to v2-a-tight. Stock copy unsigned.
