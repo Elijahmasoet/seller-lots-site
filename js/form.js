@@ -1,14 +1,19 @@
-/* Seller Lots shared: sticky CTA (safe on any page) */
+/* Snippet A: mobile sticky follows the first in-page Get ready. Never on /waitlist/. */
 (function(){
-  var sticky = document.getElementById("sticky");
-  var anchor = document.getElementById("waitlist");
-  if (sticky && anchor && "IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      sticky.classList.toggle("on", !entries[0].isIntersecting);
-    }).observe(anchor);
-  } else if (sticky && !anchor) {
-    sticky.classList.add("on");
-  }
+  var path = location.pathname || "";
+  if (/\/waitlist\/?$/.test(path) || /\/waitlist\/index\.html$/.test(path)) return;
+  var s = document.getElementById("sticky");
+  var first = document.querySelector("[data-first-cta]");
+  if (!s || !first || !("IntersectionObserver" in window)) return;
+  var link = s.querySelector("a");
+  new IntersectionObserver(function(entries){
+    var e = entries[0];
+    var past = !e.isIntersecting && e.boundingClientRect.top < 0;
+    s.classList.toggle("on", past);
+    document.body.classList.toggle("sticky-on", past);
+    s.setAttribute("aria-hidden", past ? "false" : "true");
+    if (link) link.tabIndex = past ? 0 : -1;
+  }).observe(first);
 })();
 
 (function(){
@@ -88,6 +93,16 @@
   var persona = null;
 
   function $(id){ return document.getElementById(id); }
+  function setErrors(ul, list){
+    if (!ul) return;
+    ul.textContent = "";
+    (list || []).forEach(function(m){
+      var li = document.createElement("li");
+      li.textContent = m;
+      ul.appendChild(li);
+    });
+    ul.hidden = !list || !list.length;
+  }
   function setRequired(el, on){
     if (!el) return;
     if (on) el.setAttribute("required","required");
@@ -303,8 +318,7 @@
     var problems = validateContact();
     var fail = $("fail-2");
     if (problems.length){
-      fail.hidden = false;
-      fail.textContent = problems.join(" ");
+      setErrors(fail, problems);
       return;
     }
     showStep(3);
@@ -324,8 +338,7 @@
     var fail = $(failId) || $("fail-3");
     if (!cfg){
       e.preventDefault();
-      fail.hidden = false;
-      fail.textContent = "Pick who you are first.";
+      setErrors(fail, ["Pick who you are first."]);
       showStep(1);
       return;
     }
@@ -369,14 +382,12 @@
     if (!lead.checkValidity() && problems.length === 0){
       e.preventDefault();
       lead.reportValidity();
-      fail.hidden = false;
-      fail.textContent = "Check the highlighted fields.";
+      setErrors(fail, ["Check the highlighted fields."]);
       return;
     }
     if (problems.length){
       e.preventDefault();
-      fail.hidden = false;
-      fail.textContent = problems.join(" ");
+      setErrors(fail, problems);
       return;
     }
     var u = $("f-tiktok");
@@ -430,6 +441,7 @@
     if (tagEl) tagEl.value = "";
     if (roleEl) roleEl.value = "";
   }
+  if (params.get("demo") === "errors" && step === 2 && $("next-2")) $("next-2").click();
 
   /* Attribution hiddens */
   (function fillAttribution(){
@@ -501,7 +513,7 @@
       }).catch(function(){
         btns.forEach(function(b){ b.disabled = false; });
         var fail = $("fail-3") || $("fail-2-short") || $("fail-2");
-        if (fail){ fail.hidden = false; fail.textContent = "That didn’t go through. Try again in a minute — or email hello@sellerlots.com.au."; }
+        setErrors(fail, ["That didn’t go through. Try again in a minute — or email hello@sellerlots.com.au."]);
       });
     });
   }

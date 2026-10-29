@@ -15,6 +15,7 @@
   --stamp:#e5f2eb;
   --rad:4px;
   --focus:#08402a;
+  --content:100%;
   color-scheme:light;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -32,7 +33,11 @@ body{
   border-top:4px solid var(--green);
   -webkit-text-size-adjust:100%;
   overflow-x:hidden;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
+main{flex:1 0 auto;width:100%}
 a{color:inherit}
 img{max-width:100%;height:auto}
 .skip{
@@ -144,7 +149,7 @@ section{padding:0 0 40px}
 .crumbs a{color:var(--green-d);font-weight:600;text-decoration:none}
 .crumbs a:hover{text-decoration:underline}
 .by{color:var(--muted);font-size:15px;margin-bottom:14px}
-.prose h2,.prose h3,.prose p,.prose ul,.prose ol,.prose .answer,.prose .by,.prose .cta-band,.prose .steps{max-width:40rem}
+.prose h2,.prose h3,.prose p,.prose ul,.prose ol,.prose .by,.prose .steps{max-width:40rem}
 .prose .steps{grid-template-columns:1fr}
 .prose h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:30px;line-height:1.05;letter-spacing:.01em;margin:1.4em 0 .35em}
 .prose h3{font-size:18px;margin:1.1em 0 .25em}
@@ -154,7 +159,7 @@ section{padding:0 0 40px}
 .answer,.callout{background:var(--stamp);border-left:4px solid var(--green);padding:14px 16px;margin:0 0 16px}
 .faq{margin-top:8px}
 .cta-band{
-  background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:16px;box-shadow:4px 4px 0 var(--green);margin:8px 0 20px;max-width:40rem;
+  background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:16px;box-shadow:4px 4px 0 var(--green);margin:8px 0 20px;
 }
 .cta-band p{margin-bottom:12px}
 .tag{display:inline-block;font-size:13px;font-weight:600;border:1px solid var(--ink);border-radius:20px;padding:1px 10px}
@@ -186,15 +191,17 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
   .pagehead{padding:40px 0 8px}
 }
 @media (max-width:720px){
+  :root{--sticky-h:68px}
+  body{padding-bottom:calc(var(--sticky-h) + 16px + env(safe-area-inset-bottom))}
   .sticky{
-    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--paper);
+    display:block;position:fixed;left:0;right:0;bottom:0;z-index:50;
     padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-    box-shadow:0 -4px 12px rgba(0,0,0,.08);
-    transform:translateY(110%);transition:transform .2s;display:block;visibility:hidden;
+    background:var(--paper);border-top:1px solid var(--line);
+    transform:translateY(110%);visibility:hidden;transition:transform .2s;
   }
   .sticky.on{transform:none;visibility:visible}
   .sticky .btn{display:block;width:100%}
-  body:has(#sticky.on){padding-bottom:84px}
+  body.sticky-on header .btn-sm{visibility:hidden}
 }
 
 /* P0 — persona chips, helpers, sticky form card, trust line */
@@ -239,7 +246,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 
 .cta-band.mid{
   background:var(--stamp);border:1.5px solid var(--ink);border-radius:6px;
-  padding:18px 16px;box-shadow:4px 4px 0 var(--green);margin:16px 0 24px;max-width:40rem;
+  padding:18px 16px;box-shadow:4px 4px 0 var(--green);margin:16px 0 24px;
 }
 .cta-band.mid p{margin-bottom:12px;color:var(--ink)}
 .cta-band .micro{font-size:13.5px;color:var(--muted);margin-top:10px;margin-bottom:0}
@@ -260,8 +267,6 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
   .fine{margin-top:8px}
   .hero{padding:14px 0 22px}
   .hero-grid{gap:14px}
-  /* sticky CTA clearance when form is open / long */
-  body:has(#sticky.on){padding-bottom:84px}
   #branch-fields{padding-bottom:4px}
 }
 @media (min-width:480px){
@@ -455,7 +460,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 .wiz-grid .bridge-col .sub{margin-bottom:8px}
 
 /* how-to signed v2-a-tight extras */
-.status{max-width:640px;margin-bottom:14px}
+.status{margin-bottom:14px}
 .status p{margin:0 0 6px;color:var(--muted);font-size:16px}
 .cta1{margin:16px 0 28px}
 .bridge{color:var(--muted);font-size:16px;margin:0 0 14px;max-width:40em}
@@ -466,10 +471,10 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 .stat .n{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:32px;line-height:1;margin-bottom:6px}
 .stat p{font-size:14.5px;color:var(--muted);margin:0}
 .stat .src{display:block;margin-top:8px;font-size:12px;color:#6a776f}
-.honesty{background:var(--stamp);border:1px solid var(--green);border-radius:6px;padding:16px 18px;margin:0 0 36px;max-width:720px}
+.honesty{background:var(--stamp);border:1px solid var(--green);border-radius:6px;padding:16px 18px;margin:0 0 36px;max-width:none}
 .honesty h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;margin-bottom:6px;color:var(--green-d)}
 .honesty p{font-size:15.5px;color:var(--muted);margin:0}
-.howto-faq{max-width:720px;margin-bottom:44px}
+.howto-faq{max-width:none;margin-bottom:44px}
 .howto-faq details{border-top:1px solid var(--line);padding:11px 0}
 .howto-faq details:last-child{border-bottom:1px solid var(--line)}
 .howto-faq summary{font-weight:700;cursor:pointer;list-style:none;font-size:16px}
@@ -500,7 +505,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 .stat .n{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:32px;line-height:1;margin-bottom:6px}
 .stat p{font-size:14.5px;color:var(--muted);margin:0}
 .stat .src{display:block;margin-top:8px;font-size:12px;color:#6a776f}
-.honesty{background:var(--stamp);border:1px solid var(--green);border-radius:6px;padding:16px 18px;margin:0 0 36px;max-width:720px}
+.honesty{background:var(--stamp);border:1px solid var(--green);border-radius:6px;padding:16px 18px;margin:0 0 36px;max-width:none}
 .honesty h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;margin-bottom:6px;color:var(--green-d)}
 .honesty p{font-size:15.5px;color:var(--muted);margin:0}
 .faq details{border-top:1px solid var(--line);padding:11px 0}
@@ -517,11 +522,50 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 .step .n{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:28px;color:var(--green);line-height:1;margin-bottom:6px}
 .step h3{font-size:17px;margin-bottom:4px}
 .step p{color:var(--muted);font-size:15px;margin:0}
-.lede{max-width:40em;color:var(--muted);font-size:17px;margin-bottom:22px}
-.draft-banner{background:#fff3cd;border:1px solid #e0c35a;border-radius:6px;padding:10px 14px;margin:18px 0 0;font-size:14px;font-weight:600;color:#5c4a00}
+.lede{max-width:40em;color:#2a332e;font-size:19px;line-height:1.45;margin-bottom:22px}
 .howto-page .tiles,.stock-page .tiles,.about-page .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .howto-page .tile,.stock-page .tile,.about-page .tile{background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:16px 18px;height:auto}
 a.chip{text-decoration:none}
 @media(max-width:800px){
   .stats,.mean,.howto-page .tiles,.stock-page .tiles,.about-page .tiles,.stock-page .steps{grid-template-columns:1fr}
+}
+
+/* Snippet B — callouts and FAQ share the card-grid column; reading measure stays on prose */
+.honesty,.callout,.faq,.prose .cta-band,.prose .answer,.status,.cta-band,.cta-band.mid{max-width:var(--content)}
+.prose p,.prose ul,.prose ol,.sub,.bridge{max-width:40rem}
+
+/* About v1-r3 — hero Get ready sits ~28px above What we do */
+.about-page .hero{padding-bottom:0}
+.about-page .hero .cta{margin:0}
+.about-page .hero + .sec{margin-top:28px}
+
+/* Stock — mid Get ready to What Stock Means Here, ~52px combined.
+   Padding on the section keeps the 24px margin from collapsing into the next heading. */
+.stock-page .cta2{margin-bottom:24px}
+.stock-page section:has(.cta2){padding-bottom:28px}
+.stock-page section:has(.cta2) + section > .sec{margin-top:0}
+
+/* Waitlist v3-b-r3 — stacked field errors; mobile title lives in the form card */
+.field-errors{
+  list-style:none;margin:10px 0 12px;padding:10px 12px 10px 14px;
+  border-left:3px solid #8a1c1c;background:#fbeeee;border-radius:4px;
+  color:#8a1c1c;font-weight:600;font-size:14px;line-height:1.35;
+}
+.field-errors[hidden]{display:none!important}
+.field-errors li{margin:0}
+.field-errors li+li{margin-top:4px}
+.field-errors li::before{
+  content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#8a1c1c;margin:0 8px 2px 0;vertical-align:middle;
+}
+.card-head{display:none}
+.card-head .eyebrow{margin-bottom:2px}
+.card-head .page-title{
+  font-family:"Barlow Condensed","Arial Narrow",sans-serif;
+  font-weight:700;font-size:34px;line-height:1;margin-bottom:10px;color:var(--ink);
+}
+@media(max-width:860px){
+  .card-head{display:block}
+  .waitlist-hero .bridge-col > .eyebrow,
+  .waitlist-hero .bridge-col > h1{display:none}
 }

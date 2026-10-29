@@ -20,7 +20,7 @@
 <link rel="alternate" hreflang="en-AU" href="https://sellerlots.com.au/waitlist/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/css/site.css?v=waitlist2">
+<link rel="stylesheet" href="/css/site.css?v=critiquito1">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -49,6 +49,10 @@
         </p>
       </div>
       <div class="formcard" id="waitlist">
+        <div class="card-head">
+          <p class="eyebrow">TikTok Shop Australia</p>
+          <p class="page-title">Get ready</p>
+        </div>
         <div class="steps" id="step-indicator" aria-live="polite">
           <span class="dot on" id="dot-1">1</span><span class="sep" id="sep-1" aria-hidden="true"></span>
           <span class="dot" id="dot-2">2</span><span class="sep" id="sep-2" aria-hidden="true"></span>
@@ -118,19 +122,19 @@
             <!-- Brand/curious: notes + submit live on their final (of-2) step -->
             <div id="short-finish" hidden>
               <div class="field" data-branch="notes-short"><label for="f-notes-short">Anything else? <span class="opt">(optional)</span></label><textarea id="f-notes-short" name="notes" rows="3" maxlength="2000" placeholder="Questions about the AU launch"></textarea></div>
+              <ul class="field-errors" id="fail-2-short" hidden role="alert"></ul>
               <div class="btn-row">
                 <button type="button" class="btn btn-ghost" id="back-2-short">Back</button>
                 <button class="btn" type="submit" id="submitBtnShort">Get ready</button>
               </div>
-              <p class="fail" id="fail-2-short" hidden role="alert"></p>
               <p class="fine">Australia. Free. Separate from the Rage Wholesale clothing list. <a href="/privacy/">Privacy</a>.</p>
             </div>
 
+            <ul class="field-errors" id="fail-2" hidden role="alert"></ul>
             <div class="btn-row" id="long-next">
               <button type="button" class="btn btn-ghost" id="back-2">Back</button>
               <button type="button" class="btn" id="next-2">Continue</button>
             </div>
-            <p class="fail" id="fail-2" hidden role="alert"></p>
           </div>
 
           <!-- STEP 3: platforms + TikTok + audience + categories + notes + submit (host/affiliate) -->
@@ -192,11 +196,11 @@
 
             <div class="field" data-branch="notes"><label for="f-notes">Anything else? <span class="opt">(optional)</span></label><textarea id="f-notes" name="notes" rows="3" maxlength="2000" placeholder="What you sell now, or questions about the AU launch"></textarea></div>
 
+            <ul class="field-errors" id="fail-3" hidden role="alert"></ul>
             <div class="btn-row">
               <button type="button" class="btn btn-ghost" id="back-3">Back</button>
               <button class="btn" type="submit" id="submitBtn">Get ready</button>
             </div>
-            <p class="fail" id="fail-3" hidden role="alert"></p>
             <p class="fine">Australia. Free. Separate from the Rage Wholesale clothing list. <a href="/privacy/">Privacy</a>.</p>
           </div>
         </form>
@@ -216,6 +220,6 @@
     </nav>
   </div>
 </footer>
-<script src="/js/form.js"></script>
+<script src="/js/form.js?v=critiquito1"></script>
 </body>
 </html>
