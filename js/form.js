@@ -475,6 +475,7 @@
 
   /* Fetch submit after SoT validation (bubble, registered after SoT listener) */
   var _lead = $("leadForm");
+  var waitlistConversionSent = false;
   if (_lead) {
     _lead.addEventListener("submit", function(e){
       if (e.defaultPrevented) return;
@@ -510,6 +511,18 @@
         msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for hosts on the list.";
         if (card) card.appendChild(msg);
         msg.focus();
+        if (!waitlistConversionSent) {
+          waitlistConversionSent = true;
+          try {
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "conversion", {
+                send_to: "AW-18407151246/_Ov8CNKp568dEI6tm8lE",
+                value: 1.0,
+                currency: "AUD"
+              });
+            }
+          } catch (e) {}
+        }
       }).catch(function(){
         btns.forEach(function(b){ b.disabled = false; });
         var fail = $("fail-3") || $("fail-2-short") || $("fail-2");
