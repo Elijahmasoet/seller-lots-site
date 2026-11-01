@@ -50,7 +50,7 @@
       phone: "Same number you’d answer for a launch message.",
       platforms: "Tick all that apply.",
       categories: "Tick all that apply.",
-      tiktok: "Your TikTok @ — we’ll use this to check fit.",
+      tiktok: "Your TikTok @. We’ll use this to check fit.",
       audience: "Rough is fine."
     },
     brand: { location: "Where you’re based.", categories: "Tick all that apply." },
@@ -59,7 +59,7 @@
       location: "So we know where a lot would need to go.",
       platforms: "Tick all that apply.",
       categories: "Tick all that apply.",
-      tiktok: "Your TikTok @ — we’ll use this to check fit.",
+      tiktok: "Your TikTok @. We’ll use this to check fit.",
       audience: "Optional if you’re just starting."
     }
   };
@@ -76,8 +76,8 @@
     }
   };
   var TITLES = {
-    1: { title: "Who You Are", sub: "Host, affiliate, brand, or curious. Tap one to start." },
-    2: { title: "How we reach you", sub: "Name and contact — then the sell details." },
+    1: { title: "Who You Are", sub: "Creator Buying Stock, affiliate / creator, brand, or curious. Tap one to start." },
+    2: { title: "How we reach you", sub: "Name and contact, then the sell details." },
     3: { title: "How you sell", sub: "Platforms, TikTok, and what you’d sell." }
   };
 
@@ -155,7 +155,7 @@
     if (cfg.hasSellStep){
       if (shortF) shortF.hidden = true;
       if (longN) longN.hidden = false;
-      /* disable short notes name conflict — only one notes field active */
+      /* disable short notes name conflict: only one notes field active */
       var ns = $("f-notes-short");
       if (ns){ ns.disabled = true; ns.removeAttribute("name"); }
       var nl = $("f-notes");
@@ -244,12 +244,15 @@
     }
     if ((persona === "host" || persona === "affiliate") && step === 2){
       $("card-title").textContent = "How we reach you";
-      $("card-sub").textContent = "Contact first — TikTok details next.";
+      $("card-sub").textContent = "Contact first. TikTok details next.";
     }
     if ((persona === "host" || persona === "affiliate") && step === 3){
       $("card-title").textContent = "How you sell";
       $("card-sub").textContent = "Platforms, TikTok, and what you’d sell.";
     }
+
+    var bridgeMore = $("bridge-more");
+    if (bridgeMore) bridgeMore.hidden = step > 1;
   }
 
   function showStep(n){
@@ -397,7 +400,7 @@
     }
   });
 
-  /* Brand needs categories on of-2 finish — clone visibility: show categories fieldset inside short-finish for brand */
+  /* Brand needs categories on of-2 finish. Move the categories fieldset into short-finish. */
   function ensureBrandCategories(){
     var cfg = persona && BRANCH[persona];
     var shortF = $("short-finish");
@@ -481,7 +484,7 @@
       if (e.defaultPrevented) return;
       if (params.get("nosubmit") === "1") {
         e.preventDefault();
-        alert("Demo mode (nosubmit=1) — would send to Formspree.");
+        alert("Demo mode (nosubmit=1). Would send to Formspree.");
         return;
       }
       e.preventDefault();
@@ -508,7 +511,7 @@
         msg.className = "thanks";
         msg.setAttribute("tabindex","-1");
         msg.setAttribute("role","status");
-        msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for hosts on the list.";
+        msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for people tagged Creator Buying Stock.";
         if (card) card.appendChild(msg);
         msg.focus();
         if (!waitlistConversionSent) {
@@ -526,7 +529,7 @@
       }).catch(function(){
         btns.forEach(function(b){ b.disabled = false; });
         var fail = $("fail-3") || $("fail-2-short") || $("fail-2");
-        setErrors(fail, ["That didn’t go through. Try again in a minute — or email hello@sellerlots.com.au."]);
+        setErrors(fail, ["That didn’t go through. Try again in a minute, or email hello@sellerlots.com.au."]);
       });
     });
   }
