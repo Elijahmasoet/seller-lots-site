@@ -1,4 +1,4 @@
-/* Seller Lots — static site. Trade counter, not a course. */
+/* Seller Lots - static site. Trade counter, not a course. */
 @font-face{font-family:"Source Sans 3";font-style:normal;font-weight:400;font-display:swap;src:url("/fonts/source-sans-3-latin-400.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Source Sans 3";font-style:normal;font-weight:600;font-display:swap;src:url("/fonts/source-sans-3-latin-600.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url("/fonts/barlow-condensed-latin-700.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -19,6 +19,8 @@
   color-scheme:light;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+/* Author display rules must not override the hidden attribute (dots, button rows). */
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;overflow-x:hidden}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -204,7 +206,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
   body.sticky-on header .btn-sm{visibility:hidden}
 }
 
-/* P0 — persona chips, helpers, sticky form card, trust line */
+/* P0 - persona chips, helpers, sticky form card, trust line */
 .trustline{font-size:16px;color:var(--muted);max-width:36em;margin-top:12px;line-height:1.45}
 .trustline a{color:var(--green-d);font-weight:600}
 .seclinks{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
@@ -292,7 +294,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 
 
 /* waitlist-wizard-v3b-r1 */
-/* mobile-center harden — form fills card */
+/* mobile-center harden - form fills card */
 .formcard input,.formcard select,.formcard textarea{width:100%;max-width:100%;box-sizing:border-box}
 
 .bridge{color:var(--muted);font-size:16px;margin:0 0 10px;max-width:34em}
@@ -383,33 +385,35 @@ footer{border-top:1px solid var(--line);padding:22px 0 28px;font-size:14px;color
 }
 @media(max-width:319px){.chips{grid-template-columns:1fr}}
 
-/* Waitlist hero secondary actions — outline buttons, not the green submit */
+/* Waitlist left-rail links: quiet text, not a second set of buttons. */
 .waitlist-hero .seclinks{
-  align-items:stretch;
-  gap:10px;
-  margin-top:16px;
+  align-items:flex-start;
+  flex-direction:row;
+  flex-wrap:wrap;
+  gap:6px 16px;
+  margin-top:8px;
 }
 .waitlist-hero .seclinks a{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  min-height:48px;
-  padding:12px 16px;
-  background:#fff;
-  color:var(--ink);
-  text-decoration:none;
+  display:inline;
+  width:auto;
+  min-height:0;
+  padding:0;
+  background:none;
+  color:var(--muted);
+  text-decoration:underline;
+  text-underline-offset:2px;
   font-weight:600;
-  font-size:16px;
-  line-height:1.2;
-  text-align:center;
-  border:1.5px solid var(--ink);
-  border-radius:6px;
-  box-shadow:3px 3px 0 var(--green);
+  font-size:14.5px;
+  line-height:1.4;
+  text-align:left;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
 }
 .waitlist-hero .seclinks a:hover,
 .waitlist-hero .seclinks a:focus-visible{
-  background:var(--stamp);
+  background:none;
+  color:var(--green-d);
 }
 
 /* === waitlist-wizard-v3b-r1 === */
@@ -530,22 +534,22 @@ a.chip{text-decoration:none}
   .stats,.mean,.howto-page .tiles,.stock-page .tiles,.about-page .tiles,.stock-page .steps{grid-template-columns:1fr}
 }
 
-/* Snippet B — callouts and FAQ share the card-grid column; reading measure stays on prose */
+/* Snippet B - callouts and FAQ share the card-grid column; reading measure stays on prose */
 .honesty,.callout,.faq,.prose .cta-band,.prose .answer,.status,.cta-band,.cta-band.mid{max-width:var(--content)}
 .prose p,.prose ul,.prose ol,.sub,.bridge{max-width:40rem}
 
-/* About v1-r3 — hero Get ready sits ~28px above What we do */
+/* About v1-r3 - hero Get ready sits ~28px above What we do */
 .about-page .hero{padding-bottom:0}
 .about-page .hero .cta{margin:0}
 .about-page .hero + .sec{margin-top:28px}
 
-/* Stock — mid Get ready to What Stock Means Here, ~52px combined.
+/* Stock - mid Get ready to What Stock Means Here, ~52px combined.
    Padding on the section keeps the 24px margin from collapsing into the next heading. */
 .stock-page .cta2{margin-bottom:24px}
 .stock-page section:has(.cta2){padding-bottom:28px}
 .stock-page section:has(.cta2) + section > .sec{margin-top:0}
 
-/* Waitlist v3-b-r3 — stacked field errors; mobile title lives in the form card */
+/* Waitlist v3-b-r3 - stacked field errors; mobile title lives in the form card */
 .field-errors{
   list-style:none;margin:10px 0 12px;padding:10px 12px 10px 14px;
   border-left:3px solid #8a1c1c;background:#fbeeee;border-radius:4px;
