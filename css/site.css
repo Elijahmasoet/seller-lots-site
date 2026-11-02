@@ -609,10 +609,3 @@ section.trustbar{padding-bottom:8px}
 @media (min-width:720px){
   section.trustbar{padding-bottom:12px}
 }
-
-/* Plain status line under the H1. Buttons stay .btn / .btn-sm. */
-.hero .lede{margin-bottom:8px}
-.cta1 .trustchips{margin-top:14px}
-.rolelinks{margin:12px 0 0;font-size:15px;color:var(--muted);max-width:40rem;line-height:1.45}
-.rolelinks a{color:var(--muted);font-weight:600;text-decoration:underline;text-underline-offset:2px}
-.rolelinks a:hover{color:var(--green-d)}
