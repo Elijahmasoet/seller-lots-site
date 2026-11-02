@@ -573,3 +573,39 @@ a.chip{text-decoration:none}
   .waitlist-hero .bridge-col > .eyebrow,
   .waitlist-hero .bridge-col > h1{display:none}
 }
+
+/* Adapt 1 Nov: bottom line, overseas proof, trust chips, FAQ headings */
+.bottom-line{
+  background:#fff;border:1.5px solid var(--ink);border-left:4px solid var(--green);
+  border-radius:6px;box-shadow:4px 4px 0 var(--green);
+  padding:12px 14px;margin:12px 0 14px;max-width:40rem;
+}
+.bottom-line-kicker{
+  font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--green);font-size:14px;margin-bottom:4px;
+}
+.bottom-line p:last-child{margin:0;font-size:16.5px;line-height:1.45;color:var(--ink)}
+.updated{font-size:13.5px;color:var(--muted);margin:0 0 4px}
+section.trustbar{padding-bottom:8px}
+.trustchips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.trustchips li{
+  font-size:13.5px;font-weight:600;color:var(--green-d);background:var(--stamp);
+  border:1px solid var(--line);border-radius:999px;padding:6px 12px;line-height:1.3;
+}
+.about-page .trustchips{margin:18px 0 0}
+.proof-note{margin-top:12px;color:var(--muted);font-size:14.5px;max-width:42rem}
+.cta-band.mid .btn{display:inline-block;width:auto}
+.howto-page .cta-band.mid{margin:4px 0 8px}
+.faq-list{margin:0}
+.faq-list .faq-item{border-top:1px solid var(--line);padding:14px 0 2px}
+.faq-list .faq-item:last-child{border-bottom:1px solid var(--line);padding-bottom:12px}
+.faq-list h3{font-size:18px;font-weight:700;line-height:1.3;margin:0;letter-spacing:0;font-family:"Source Sans 3",system-ui,sans-serif}
+.faq-list p{margin:8px 0 12px;color:var(--muted);font-size:15.5px;max-width:40rem}
+.faq-list a{color:var(--green-d);font-weight:600}
+.faq-more{margin:14px 0 0;font-size:15.5px}
+.faq-more a{color:var(--green-d);font-weight:600}
+.faq-page h1{max-width:16em}
+.faq-page .lede{margin-bottom:12px}
+@media (min-width:720px){
+  section.trustbar{padding-bottom:12px}
+}
