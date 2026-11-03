@@ -40,7 +40,7 @@
       show: ["name","email","phone","location","platforms","platforms-other","tiktok-row","tiktok","audience","categories","categories-other","notes"],
       require: ["name","email","phone","location","platforms","categories","tiktok"],
       hasSellStep: true,
-      label: "Creator Buying Stock"
+      label: "Live seller"
     }
   };
   var HELPERS = {
@@ -55,8 +55,8 @@
     },
     brand: { location: "Where you’re based.", categories: "Tick all that apply." },
     host: {
-      phone: "We’ll use this if a lot is ready.",
-      location: "So we know where a lot would need to go.",
+      phone: "Same number you’d answer.",
+      location: "Where you’re based.",
       platforms: "Tick all that apply.",
       categories: "Tick all that apply.",
       tiktok: "Your TikTok @. We’ll use this to check fit.",
@@ -69,14 +69,14 @@
       platforms: "Where do you sell or create content today?",
       categories: "What would you promote?"
     },
-    brand: { categories: "What do you make or supply?" },
+    brand: { categories: "What do you sell?" },
     host: {
       platforms: "Where do you sell or create content today?",
       categories: "What would you sell?"
     }
   };
   var TITLES = {
-    1: { title: "Who You Are", sub: "Creator Buying Stock, affiliate / creator, brand, or curious. Tap one to start." },
+    1: { title: "Who You Are", sub: "Brand, creator, or just looking. Tap one to start." },
     2: { title: "How we reach you", sub: "Name and contact, then the sell details." },
     3: { title: "How you sell", sub: "Platforms, TikTok, and what you’d sell." }
   };
@@ -240,7 +240,7 @@
     }
     if (persona === "brand" && step === 2){
       $("card-title").textContent = "Brand details";
-      $("card-sub").textContent = "Contact + what you make. Then you’re on the list.";
+      $("card-sub").textContent = "Contact, and what you sell. Then you’re on the list.";
     }
     if ((persona === "host" || persona === "affiliate") && step === 2){
       $("card-title").textContent = "How we reach you";
@@ -511,7 +511,7 @@
         msg.className = "thanks";
         msg.setAttribute("tabindex","-1");
         msg.setAttribute("role","status");
-        msg.textContent = "You’re on the Seller Lots waitlist for TikTok Shop Australia. We’ll email this address with updates. Stock talk is for people tagged Creator Buying Stock.";
+        msg.textContent = "Got you on the list. We’ll email when there’s something worth your time.";
         if (card) card.appendChild(msg);
         msg.focus();
         if (!waitlistConversionSent) {
